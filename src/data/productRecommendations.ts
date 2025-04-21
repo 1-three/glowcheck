@@ -139,26 +139,25 @@ export const productRecommendations: ProductRecommendation[] = [
 ];
 
 export function getRecommendedProducts(
-  productType: string,
-  concern: string,
+  productName: string,
+  desiredResult: string,
   preferredIngredient: string = '',
   userSkinType: string = '',
   userHairType: string = ''
 ): ProductRecommendation[] {
-  // Filter by product type first (skin or hair)
-  const isForSkin = productType.includes('face') || 
-                   productType.includes('skin') || 
-                   productType === 'serum' || 
-                   productType === 'moisturizer' || 
-                   productType === 'cleanser';
+  // Determine if looking for skin or hair product based on input
+  const isForSkin = productName.toLowerCase().includes('face') || 
+                   productName.toLowerCase().includes('skin') ||
+                   desiredResult.toLowerCase().includes('acne') ||
+                   desiredResult.toLowerCase().includes('wrinkle') ||
+                   desiredResult.toLowerCase().includes('glow');
   
-  const isForHair = productType.includes('hair') || 
-                   productType === 'shampoo' || 
-                   productType === 'conditioner' || 
-                   productType === 'mask' || 
-                   productType === 'oil';
+  const isForHair = productName.toLowerCase().includes('hair') || 
+                   productName.toLowerCase().includes('shampoo') ||
+                   desiredResult.toLowerCase().includes('dandruff') ||
+                   desiredResult.toLowerCase().includes('frizz');
 
-  // Initial filtering based on product type
+  // Initial filtering based on product type (skin/hair)
   let filtered = productRecommendations.filter(product => {
     if (isForSkin && product.forSkinTypes.length > 0) {
       return true;
@@ -167,14 +166,20 @@ export function getRecommendedProducts(
       return true;
     }
     
-    // If specific product type was provided
-    return product.type.toLowerCase() === productType.toLowerCase();
+    // Match product name keywords
+    return productName.toLowerCase().split(' ').some(word => 
+      product.name.toLowerCase().includes(word) ||
+      product.type.toLowerCase().includes(word)
+    );
   });
   
-  // Further filter by concern
-  if (concern) {
+  // Filter by desired result/concern
+  if (desiredResult) {
     filtered = filtered.filter(product => 
-      product.concerns.some(c => c.toLowerCase().includes(concern.toLowerCase()))
+      desiredResult.toLowerCase().split(' ').some(word => 
+        product.concerns.some(c => c.toLowerCase().includes(word)) ||
+        product.description.toLowerCase().includes(word)
+      )
     );
   }
   

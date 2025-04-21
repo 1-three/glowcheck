@@ -73,8 +73,8 @@ export default function Dashboard() {
   };
 
   const handleRecommend = async (data: {
-    productType: string;
-    concern: string;
+    productName: string;
+    desiredResult: string;
     preferredIngredient: string;
   }) => {
     setIsRecommending(true);
@@ -86,8 +86,8 @@ export default function Dashboard() {
       const userHairType = profile?.hair_type || 'normal';
 
       const results = getRecommendedProducts(
-        data.productType,
-        data.concern,
+        data.productName,
+        data.desiredResult,
         data.preferredIngredient,
         userSkinType,
         userHairType
